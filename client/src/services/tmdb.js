@@ -1,0 +1,103 @@
+const API_BASE = 'https://api.themoviedb.org/3';
+
+/*
+  Necessário configurar o VITE_TMDB_ACCESS_TOKEN no arquivo .env
+*/
+const getAuthHeaders = () => {
+    const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
+    return {
+        accept: 'application/json',
+        Authorization: `Bearer ${token}`
+    };
+};
+
+const basicFetch = async (endpoint) => {
+    try {
+        const req = await fetch(`${API_BASE}${endpoint}`, {
+            headers: getAuthHeaders()
+        });
+        const json = await req.json();
+        return json;
+    } catch (error) {
+        console.error("Erro na requisição TMDB:", error);
+        return null;
+    }
+}
+
+export default {
+    getHomeList: async (type = 'all') => {
+        let list = [];
+        const lang = 'language=pt-BR';
+
+        // Helper para montar objeto da categoria
+        const addCat = async (slug, title, endpoint) => {
+            // Garante que o endpoint tenha o separador correto para adicionar page depois
+            const separator = endpoint.includes('?') ? '&' : '?';
+            const fullEndpoint = `${endpoint}${separator}${lang}`;
+            
+            return {
+                slug,
+                title,
+                endpoint: fullEndpoint, // Salvamos a URL base para paginação
+                items: await basicFetch(fullEndpoint)
+            };
+        };
+
+        if (type === 'all' || type === 'movies') {
+            list.push(await addCat('trending', 'Em Alta', '/trending/movie/week'));
+            list.push(await addCat('toprated', 'Melhores Avaliados', '/movie/top_rated'));
+            list.push(await addCat('action', 'Ação', '/discover/movie?with_genres=28'));
+            list.push(await addCat('comedy', 'Comédia', '/discover/movie?with_genres=35'));
+            list.push(await addCat('horror', 'Terror', '/discover/movie?with_genres=27'));
+        }
+
+        if (type === 'series') {
+            list.push(await addCat('trending-tv', 'Séries em Alta', '/trending/tv/week'));
+            list.push(await addCat('toprated-tv', 'Séries Aclamadas', '/tv/top_rated'));
+            list.push(await addCat('action-tv', 'Ação & Aventura', '/discover/tv?with_genres=10759'));
+            list.push(await addCat('drama-tv', 'Dramas', '/discover/tv?with_genres=18'));
+        }
+
+        if (type === 'doramas') {
+            // Obter ano atual para filtro de lançamentos
+            const currentYear = new Date().getFullYear();
+            
+            list.push(await addCat('releases-k', 'Novos Lançamentos', `/discover/tv?with_original_language=ko&first_air_date.gte=${currentYear-1}-01-01&sort_by=popularity.desc`));
+            list.push(await addCat('trending-k', 'K-Dramas Populares', '/discover/tv?with_original_language=ko&sort_by=popularity.desc'));
+            list.push(await addCat('romance-k', 'Romance Coreano', '/discover/tv?with_original_language=ko&with_genres=10749'));
+            list.push(await addCat('drama-k', 'Dramas Emocionantes', '/discover/tv?with_original_language=ko&with_genres=18'));
+            list.push(await addCat('fantasy-k', 'Fantasia & Sci-Fi', '/discover/tv?with_original_language=ko&with_genres=10765'));
+        }
+
+        return list;
+    },
+
+    search: async (query, type) => {
+        let endpoint = '/search/multi'; // Padrão: busca tudo
+        
+        if(type === 'movies') endpoint = '/search/movie';
+        if(type === 'series' || type === 'doramas') endpoint = '/search/tv';
+
+        // Para doramas, poderíamos filtrar por idioma, mas vamos deixar TV geral para achar tudo
+        return await basicFetch(`${endpoint}?query=${encodeURIComponent(query)}&language=pt-BR`);
+    },
+    
+    // Pega informações detalhadas de um item específico (para o Hero Banner, por exemplo)
+    getMovieInfo: async (movieId, type) => {
+        let info = {};
+        if(movieId) {
+            switch(type) {
+                case 'movie':
+                    info = await basicFetch(`/movie/${movieId}?language=pt-BR`);
+                    break;
+                case 'tv':
+                    info = await basicFetch(`/tv/${movieId}?language=pt-BR`);
+                    break;
+                default:
+                    info = null;
+                    break;
+            }
+        }
+        return info;
+    }
+}

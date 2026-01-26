@@ -155,6 +155,21 @@ const Home = () => {
       setSelectedMovie(fullInfo || movie);
   };
 
+  // Handler para buscar ator clicado no Modal (Quem é esse Oppa?)
+  const handleActorSearch = (actor) => {
+      setSelectedMovie(null); // Fecha o modal
+      setIsSearchOpen(true); // Abre a barra de busca
+      
+      // Simula a busca pelo nome do ator
+      const term = actor.name;
+      setSearchTerm(term);
+      
+      // Aciona busca imediata
+      Tmdb.search(term, 'multi').then(results => {
+           setSearchResults(results.results || []);
+      });
+  };
+
   // Se estiver mostrando Splash, renderiza a tela de abertura
   if (showSplash) {
       return (
@@ -414,7 +429,8 @@ const Home = () => {
       {selectedMovie && (
           <MovieModal 
             movie={selectedMovie} 
-            onClose={() => setSelectedMovie(null)} 
+            onClose={() => setSelectedMovie(null)}
+            onSearchActor={handleActorSearch} 
           />
       )}
 

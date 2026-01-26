@@ -88,10 +88,10 @@ export default {
         if(movieId) {
             switch(type) {
                 case 'movie':
-                    info = await basicFetch(`/movie/${movieId}?language=pt-BR`);
+                    info = await basicFetch(`/movie/${movieId}?language=pt-BR&append_to_response=credits`);
                     break;
                 case 'tv':
-                    info = await basicFetch(`/tv/${movieId}?language=pt-BR`);
+                    info = await basicFetch(`/tv/${movieId}?language=pt-BR&append_to_response=credits`);
                     break;
                 default:
                     info = null;
@@ -99,5 +99,20 @@ export default {
             }
         }
         return info;
+    },
+
+    // Busca onde assistir (Netflix, Viki, etc)
+    getWatchProviders: async (id, type) => {
+        let endpoint = '';
+        // Watch providers endpoint logic
+        if (type === 'movie') endpoint = `/movie/${id}/watch/providers`;
+        else if (type === 'tv') endpoint = `/tv/${id}/watch/providers`;
+        else return null;
+
+        const res = await basicFetch(endpoint);
+        if (res && res.results && res.results.BR) {
+            return res.results.BR; // Retorna apenas dados do Brasil
+        }
+        return null; // Não disponível no BR ou erro
     }
 }

@@ -24,6 +24,8 @@ const basicFetch = async (endpoint) => {
     }
 }
 
+import HistoryService from './history';
+
 export default {
     getHomeList: async (type = 'all') => {
         let list = [];
@@ -69,7 +71,43 @@ export default {
             list.push(await addCat('fantasy-k', 'Fantasia & Sci-Fi', '/discover/tv?with_original_language=ko&with_genres=10765'));
         }
 
+        if (type === 'all') {
+            // 2. LISTA PERSONALIZADA (VÍDEOS DE TESTE) - Adiciona ao final
+            list.push({
+                slug: 'uploads',
+                title: 'Meus Envios (Teste)',
+                items: {
+                    results: [
+                        {
+                            id: 999999,
+                            title: "Teste de Upload (Drive)",
+                            overview: "Vídeo de teste carregado via Google Drive para validação do player.",
+                            poster_path: null, 
+                            backdrop_path: null,
+                            vote_average: 10.0,
+                            release_date: "2026-01-26",
+                            video_url: "https://drive.google.com/file/d/1d57szHntVeoeCO3g-_TiopikmgkRGORr/preview"
+                        }
+                    ]
+                }
+            });
+
+            // 1. CONTINUAR ASSISTINDO (Histórico Local) - Adiciona ao INÍCIO (Topo)
+            const history = HistoryService.getContinueWatching();
+            if (history.length > 0) {
+                list.unshift({
+                    slug: 'continue-watching',
+                    title: 'Continuar Telenovelando',
+                    items: { results: history } 
+                });
+            }
+        }
+
         return list;
+    },
+
+    fetchMore: async (endpoint, page) => {
+        return await basicFetch(`${endpoint}&page=${page}`);
     },
 
     search: async (query, type) => {

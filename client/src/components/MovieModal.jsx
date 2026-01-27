@@ -1,9 +1,24 @@
-import React from 'react';
-import { X, Play, Plus, ThumbsUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Play, Plus, ThumbsUp, ChevronLeft } from 'lucide-react';
 import { DoramaTags, EmotionalMeter, OppaCarousel, StreamingAvailability } from './DoramaFeatures';
-import { Doramometro } from './Doramometro'; // Importando a nova feature
+import { Doramometro } from './Doramometro';
+import HistoryService from '../services/history'; // Importa serviço de histórico
+import { CUSTOM_VIDEOS } from '../data/customVideos'; // Importa mapa de vídeos customizados
 
 const MovieModal = ({ movie, onClose, onSearchActor }) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    // Verifica se temos um vídeo customizado para este ID
+    const customVideoUrl = CUSTOM_VIDEOS[movie.id];
+    const hasVideo = customVideoUrl || movie.video_url;
+
+    // Salvar no histórico assim que der Play
+    useEffect(() => {
+        if(isPlaying) {
+            HistoryService.addToHistory(movie);
+        }
+    }, [isPlaying, movie]);
+
     if (!movie) return null;
 
     // Detectar data e tipo
@@ -33,32 +48,54 @@ const MovieModal = ({ movie, onClose, onSearchActor }) => {
                     <X className="w-6 h-6 text-white" />
                 </button>
 
-                {/* Banner Hero do Modal */}
-                <div className="relative h-[30vh] md:h-[50vh]">
-                    <img 
-                        src={`https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path}`} 
-                        alt={movie.title || movie.name}
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent" />
-                    
-                    <div className="absolute bottom-4 left-4 md:bottom-6 md:left-8 md:right-8">
-                        <h2 className="text-2xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg line-clamp-2">
-                            {movie.title || movie.name}
-                        </h2>
-                        
-                        <div className="flex flex-wrap gap-2 md:gap-4 mt-2 md:mt-4">
-                            <button className="flex items-center gap-2 bg-white text-black px-4 py-1.5 md:px-8 md:py-2 rounded font-bold hover:bg-gray-200 transition text-sm md:text-base">
-                                <Play className="fill-black w-4 h-4 md:w-5 md:h-5" /> Assistir
-                            </button>
-                            <button className="p-1.5 md:p-2 border-2 border-gray-500 rounded-full hover:border-white transition">
-                                <Plus className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                            </button>
-                            <button className="p-1.5 md:p-2 border-2 border-gray-500 rounded-full hover:border-white transition">
-                                <ThumbsUp className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                {/* Banner Hero do Modal ou Player de Vídeo */}
+                <div className="relative h-[30vh] md:h-[50vh] bg-black">
+                    {isPlaying && hasVideo ? (
+                        <div className="w-full h-full">
+                            <iframe 
+                                src={customVideoUrl || movie.video_url}
+                                title="Video Player"
+                                className="w-full h-full border-none"
+                                allow="autoplay; fullscreen"
+                            ></iframe>
+                            <button 
+                                onClick={() => setIsPlaying(false)}
+                                className="absolute top-4 left-4 z-30 bg-black/50 p-2 rounded-full hover:bg-black/80 transition text-white flex items-center gap-2 text-sm"
+                            >
+                                <ChevronLeft className="w-4 h-4" /> Voltar
                             </button>
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                            <img 
+                                src={movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop"} 
+                                alt={movie.title || movie.name}
+                                className="w-full h-full object-cover opacity-80"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent" />
+                            
+                            <div className="absolute bottom-4 left-4 md:bottom-6 md:left-8 md:right-8">
+                                <h2 className="text-2xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg line-clamp-2">
+                                    {movie.title || movie.name}
+                                </h2>
+                                
+                                <div className="flex flex-wrap gap-2 md:gap-4 mt-2 md:mt-4">
+                                    <button 
+                                        onClick={() => setIsPlaying(true)}
+                                        className="flex items-center gap-2 bg-white text-black px-4 py-1.5 md:px-8 md:py-2 rounded font-bold hover:bg-gray-200 transition text-sm md:text-base"
+                                    >
+                                        <Play className="fill-black w-4 h-4 md:w-5 md:h-5" /> Assistir
+                                    </button>
+                                    <button className="p-1.5 md:p-2 border-2 border-gray-500 rounded-full hover:border-white transition">
+                                        <Plus className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                                    </button>
+                                    <button className="p-1.5 md:p-2 border-2 border-gray-500 rounded-full hover:border-white transition">
+                                        <ThumbsUp className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Detalhes (Texto) - Ajustado padding e grid */}

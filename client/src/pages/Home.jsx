@@ -63,13 +63,20 @@ const Home = () => {
           let randomChosen = Math.floor(Math.random() * (validItems.length - 1));
           let chosen = validItems[randomChosen];
           
-          let chosenInfo = await Tmdb.getMovieInfo(chosen.id, 'vote_average' in chosen ? 'movie' : 'tv'); 
-          if(chosen.media_type) {
-             chosenInfo = await Tmdb.getMovieInfo(chosen.id, chosen.media_type);
+          // Lógica INTELIGENTE para detectar o tipo correto e evitar erros 404
+          let mediaType = 'movie'; // Padrão
+          
+          if (chosen.media_type) {
+              mediaType = chosen.media_type;
           } else if (type === 'doramas' || type === 'series') {
-             chosenInfo = await Tmdb.getMovieInfo(chosen.id, 'tv');
+              mediaType = 'tv';
+          } else {
+              // Heurística baseada em propriedades únicas
+              if (chosen.first_air_date) mediaType = 'tv';
+              else if (chosen.release_date) mediaType = 'movie';
           }
 
+          let chosenInfo = await Tmdb.getMovieInfo(chosen.id, mediaType); 
           setFeaturedData(chosenInfo);
       }
   };
@@ -373,6 +380,22 @@ const Home = () => {
                                     alt={movie.title || movie.name}
                                     className="w-full h-full object-cover transition duration-300 md:group-hover:scale-110 md:group-hover:brightness-50"
                                 />
+                                {/* Barra de Progresso (Só aparece se tiver a propriedade progress) */}
+                                {movie.progress && (
+                                    <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-700 z-20">
+                                        <div 
+                                            className="h-full bg-red-600" 
+                                            style={{ width: `${movie.progress * 100}%` }}
+                                        ></div>
+                                    </div>
+                                )}
+
+                                {/* Ícone de Play centralizado ao Hover */}
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                                     <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                                         <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+                                     </div>
+                                </div>
                                 </div>
                             ))}
                             </div>

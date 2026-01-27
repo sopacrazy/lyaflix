@@ -9,6 +9,13 @@ export const CUSTOM_VIDEOS = {
     // Teste de Upload
     999999: "https://drive.google.com/file/d/1d57szHntVeoeCO3g-_TiopikmgkRGORr/preview",
 
+    // Amor Entre Linhas (ID: 279136)
+    279136: {
+        1: {
+            1: "https://drive.google.com/file/d/16bghZNnRIJaEaAmgM3VSEXUHF1d4v5dX/preview"
+        }
+    },
+
     // DARK (ID: 70523)
     70523: {
         1: { // Temporada 1

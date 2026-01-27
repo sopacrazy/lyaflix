@@ -19,13 +19,18 @@ function App() {
       }
   };
 
+  const handleLogout = () => {
+      localStorage.removeItem('lyaflix_logged');
+      setIsLoggedIn(false);
+  };
+
   if (!isLoggedIn) {
       return <Login onLogin={handleLogin} />;
   }
 
   return (
     <>
-      <Home />
+      <Home onLogout={handleLogout} />
       <JiHoonChat />
     </>
   );

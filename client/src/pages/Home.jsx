@@ -1,11 +1,11 @@
 // src/pages/Home.jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, Info, Bell, Search, ChevronLeft, ArrowLeft, X } from 'lucide-react'; 
+import { Play, Info, Bell, Search, ChevronLeft, ArrowLeft, X, LogOut } from 'lucide-react'; 
 import Tmdb from '../services/tmdb';
 import MovieModal from '../components/MovieModal';
 import logoImg from '../assets/lya.jpg'; // Importando a logo
 
-const Home = () => {
+const Home = ({ onLogout }) => {
     // Splash Screen State
   const [showSplash, setShowSplash] = useState(true);
 
@@ -256,6 +256,14 @@ const Home = () => {
                         <Bell className="w-5 h-5 md:w-6 md:h-6 cursor-pointer opacity-90 hover:opacity-100" />
                     </button>
                     <div className="w-8 h-8 md:w-9 md:h-9 rounded bg-blue-600 flex items-center justify-center font-bold text-sm cursor-pointer border border-transparent hover:border-white transition">A</div>
+                    
+                    <button 
+                        onClick={onLogout}
+                        className="ml-2 text-gray-300 hover:text-white transition flex items-center gap-1 group"
+                        title="Sair"
+                    >
+                        <LogOut className="w-5 h-5 md:w-6 md:h-6" />
+                    </button>
                 </div>
             </div>
         </div>

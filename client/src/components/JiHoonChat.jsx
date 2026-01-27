@@ -27,7 +27,9 @@ const JiHoonChat = () => {
 
     try {
       // Nota: Em produção, mude localhost para a URL correta do backend
-      const response = await fetch('http://localhost:3000/api/chat', {
+      // Usa variável de ambiente para a URL da API (Vercel ou Local)
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: newMsg.text })

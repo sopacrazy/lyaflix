@@ -139,6 +139,11 @@ export default {
         return info;
     },
 
+    // Busca detalhes de uma temporada específica (Episódios)
+    getSeasonInfo: async (tvId, seasonNumber) => {
+        return await basicFetch(`/tv/${tvId}/season/${seasonNumber}?language=pt-BR`);
+    },
+
     // Busca onde assistir (Netflix, Viki, etc)
     getWatchProviders: async (id, type) => {
         let endpoint = '';

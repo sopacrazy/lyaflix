@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Se estivermos usando rotas, senão farei controle de estado na App
-import logoImg from '../assets/lya.jpg'; // Usando sua logo
+
 
 const Login = ({ onLogin }) => {
     const [user, setUser] = useState('');

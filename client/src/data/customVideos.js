@@ -12,15 +12,15 @@ export const CUSTOM_VIDEOS = {
     // DARK (ID: 70523)
     70523: {
         1: { // Temporada 1
-            1: "LINK_DO_EPISODIO_1_AQUI",
-            2: "LINK_DO_EPISODIO_2_AQUI",
-            3: "LINK_DO_EPISODIO_3_AQUI"
+            1: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview",
+            2: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview",
+            3: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview"
         },
         2: { // Temporada 2
-            1: "LINK_DO_EPISODIO_1_T2_AQUI"
+            1: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview"
         },
         3: { // Temporada 3
-            1: "LINK_DO_EPISODIO_1_T3_AQUI"
+            1: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview"
         }
     }
 };

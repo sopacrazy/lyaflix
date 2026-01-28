@@ -13,7 +13,10 @@ export const CUSTOM_VIDEOS = {
     279136: {
         1: {
             1: "https://drive.google.com/file/d/16bghZNnRIJaEaAmgM3VSEXUHF1d4v5dX/preview",
-            9: "https://drive.google.com/file/d/17WpNzRdNo4AoT6o__BeD3NnXh3hn5IXz/preview"
+            9: [
+                "https://drive.google.com/file/d/1K8oECBNUrnPNWi6LvPqS77Vij5QG5pMr/preview", // Novo (Opção 1)
+                "https://drive.google.com/file/d/17WpNzRdNo4AoT6o__BeD3NnXh3hn5IXz/preview"  // Antigo (Opção 2)
+            ]
         }
     },
 

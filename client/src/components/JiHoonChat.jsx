@@ -4,8 +4,6 @@ import { MessageCircle, X, Send, Heart, Sparkles } from 'lucide-react';
 const JiHoonChat = ({ visible = true }) => {
   const [isOpen, setIsOpen] = useState(false);
   
-  // Se não estiver visível (ex: assistindo filme), não renderiza nada
-  if (!visible) return null;
   const [messages, setMessages] = useState([
     { role: 'assistant', text: "Olá, Lya! Eu sou Ji-Hoon, seu especialista em Doramas. Como posso ajudar seu coração hoje?" }
   ]);
@@ -19,6 +17,9 @@ const JiHoonChat = ({ visible = true }) => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight; // Simples e direto
     }
   }, [messages, isTyping, isOpen]);
+
+  // Se não estiver visível (ex: assistindo filme), não renderiza nada
+  if (!visible) return null;
 
   const handleSend = async () => {
     if (!input.trim()) return;

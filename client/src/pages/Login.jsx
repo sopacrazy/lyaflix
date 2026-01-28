@@ -28,7 +28,7 @@ const Login = ({ onLogin }) => {
             {/* Background Image com Overlay */}
             <div className="absolute inset-0 z-0">
                 <img 
-                    src="https://assets.nflxext.com/ffe/siteui/vlv3/ab180a27-b661-44cd-9541-b2e53caac552/630c90f2-7724-4f68-b76e-5884ba165f6d/BR-pt-20231009-popsignuptwoweeks-perspective_alpha_website_large.jpg" 
+                    src="https://images.unsplash.com/photo-1574267432553-4b4628081c31?q=80&w=2031&auto=format&fit=crop" 
                     alt="Background" 
                     className="w-full h-full object-cover opacity-50 block"
                 />

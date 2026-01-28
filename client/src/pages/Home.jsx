@@ -204,7 +204,7 @@ const Home = ({ onLogout, onModalChange }) => {
       );
   }
 
-  if (!movieList.length && !featuredData && !activeCategory && !searchResults) {
+  if (!movieList.length && featuredList.length === 0 && !activeCategory && !searchResults) {
       return (
         <div className="bg-zinc-900 min-h-screen flex items-center justify-center text-white">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>

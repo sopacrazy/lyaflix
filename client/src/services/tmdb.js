@@ -47,7 +47,7 @@ export default {
 
         if (type === 'all' || type === 'movies') {
             list.push(await addCat('trending', 'Em Alta', '/trending/movie/week'));
-            list.push(await addCat('toprated', 'Melhores Avaliados', '/movie/top_rated'));
+            list.push(await addCat('toprated', 'Aclamação da Crítica (Melhores Notas)', '/movie/top_rated')); // Título padronizado
             list.push(await addCat('action', 'Ação', '/discover/movie?with_genres=28'));
             list.push(await addCat('comedy', 'Comédia', '/discover/movie?with_genres=35'));
             list.push(await addCat('horror', 'Terror', '/discover/movie?with_genres=27'));
@@ -55,7 +55,7 @@ export default {
 
         if (type === 'series') {
             list.push(await addCat('trending-tv', 'Séries em Alta', '/trending/tv/week'));
-            list.push(await addCat('toprated-tv', 'Séries Aclamadas', '/tv/top_rated'));
+            list.push(await addCat('toprated-tv', 'Aclamação da Crítica (Melhores Notas)', '/tv/top_rated')); // Título padronizado
             list.push(await addCat('action-tv', 'Ação & Aventura', '/discover/tv?with_genres=10759'));
             list.push(await addCat('drama-tv', 'Dramas', '/discover/tv?with_genres=18'));
         }
@@ -66,7 +66,8 @@ export default {
             
             list.push(await addCat('releases-k', 'Novos Lançamentos', `/discover/tv?with_original_language=ko&first_air_date.gte=${currentYear-1}-01-01&sort_by=popularity.desc`));
             list.push(await addCat('trending-k', 'K-Dramas Populares', '/discover/tv?with_original_language=ko&sort_by=popularity.desc'));
-            list.push(await addCat('toprated-k', 'Aclamação da Crítica (Melhores Notas)', '/tv/top_rated?with_original_language=ko'));
+            // Filtro rigoroso: Apenas Coreano, ordenado por nota, com mínimo de votos para evitar distorções
+            list.push(await addCat('toprated-k', 'Aclamação da Crítica (Melhores Notas)', '/discover/tv?with_original_language=ko&sort_by=vote_average.desc&vote_count.gte=200'));
             list.push(await addCat('romance-k', 'Romance Coreano', '/discover/tv?with_original_language=ko&with_genres=10749'));
             list.push(await addCat('drama-k', 'Dramas Emocionantes', '/discover/tv?with_original_language=ko&with_genres=18'));
             list.push(await addCat('fantasy-k', 'Fantasia & Sci-Fi', '/discover/tv?with_original_language=ko&with_genres=10765'));

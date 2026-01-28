@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Info, Bell, Search, ChevronLeft, ArrowLeft, X, LogOut } from 'lucide-react'; 
 import Tmdb from '../services/tmdb';
 import MovieModal from '../components/MovieModal';
+import FavoritesService from '../services/favorites'; // Importação do Serviço de Favoritos
 import logoImg from '../assets/lya.jpg'; // Importando a logo
 
 const Home = ({ onLogout, onModalChange }) => {
@@ -142,7 +143,7 @@ const Home = ({ onLogout, onModalChange }) => {
   }, [activeCategory, searchTerm]);
 
   const loadMoreCategoryItems = async () => {
-    if(!activeCategory) return;
+    if(!activeCategory || !activeCategory.endpoint) return; // Se não tiver endpoint (ex: Favoritos), não busca
     const nextPage = activeCategory.page + 1;
     const moreData = await Tmdb.fetchMore(activeCategory.endpoint, nextPage);
     
@@ -164,6 +165,20 @@ const Home = ({ onLogout, onModalChange }) => {
           page: 1
       });
       window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenFavorites = () => {
+      const favs = FavoritesService.getFavorites();
+      setActiveCategory({
+          slug: 'favorites',
+          title: 'Minha Lista ❤️',
+          endpoint: null,
+          items: favs,
+          page: 1
+      });
+      setFilter('favorites'); // Para destacar no menu
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeSearch();
   };
 
   const handleOpenModal = async (movie) => {
@@ -242,6 +257,7 @@ const Home = ({ onLogout, onModalChange }) => {
                         <button onClick={() => setFilter('series')} className={`${filter === 'series' ? 'text-white font-bold' : 'hover:text-white'} transition`}>Séries</button>
                         <button onClick={() => setFilter('movies')} className={`${filter === 'movies' ? 'text-white font-bold' : 'hover:text-white'} transition`}>Filmes</button>
                         <button onClick={() => setFilter('doramas')} className={`${filter === 'doramas' ? 'text-white font-bold' : 'hover:text-white'} transition`}>Doramas</button>
+                        <button onClick={handleOpenFavorites} className={`${filter === 'favorites' ? 'text-white font-bold' : 'hover:text-white'} transition`}>Minha Lista</button>
                     </div>
                 )}
             </div>
@@ -290,6 +306,7 @@ const Home = ({ onLogout, onModalChange }) => {
                 <button onClick={() => setFilter('series')} className={filter === 'series' ? 'text-white font-bold' : ''}>Séries</button>
                 <button onClick={() => setFilter('movies')} className={filter === 'movies' ? 'text-white font-bold' : ''}>Filmes</button>
                 <button onClick={() => setFilter('doramas')} className={filter === 'doramas' ? 'text-white font-bold' : ''}>Doramas</button>
+                <button onClick={handleOpenFavorites} className={filter === 'favorites' ? 'text-white font-bold' : ''}>Minha Lista</button>
                 <button onClick={() => setFilter('all')} className={filter === 'all' ? 'text-white font-bold' : ''}>Todos</button>
             </div>
         )}

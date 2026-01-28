@@ -5,13 +5,14 @@ import Tmdb from '../services/tmdb';
 import MovieModal from '../components/MovieModal';
 import logoImg from '../assets/lya.jpg'; // Importando a logo
 
-const Home = ({ onLogout }) => {
+const Home = ({ onLogout, onModalChange }) => {
     // Splash Screen State
   const [showSplash, setShowSplash] = useState(true);
 
     // Dados Principais
   const [movieList, setMovieList] = useState([]);
-  const [featuredData, setFeaturedData] = useState(null);
+  const [featuredList, setFeaturedList] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   
   // Controle de Navegação/Filtros
   const [filter, setFilter] = useState('all');
@@ -37,47 +38,58 @@ const Home = ({ onLogout }) => {
       return () => clearTimeout(timer);
   }, []);
 
+  // Carousel Interval
+  useEffect(() => {
+      if (featuredList.length <= 1) return;
+      
+      const interval = setInterval(() => {
+          setActiveIndex(prev => (prev + 1) % featuredList.length);
+      }, 5000); // 5 segundos
+      
+      return () => clearInterval(interval);
+  }, [featuredList]);
+
   // Função para carregar dados iniciais (Carrosséis)
   const loadData = async (type) => {
       if(searchTerm) return;
       
       setActiveCategory(null); 
       setMovieList([]); 
+      setFeaturedList([]);
       
       let list = await Tmdb.getHomeList(type);
       setMovieList(list);
 
-      // Lógica do Destaque (Hero)
+      // Lógica do Destaque (Top 5)
       let trendingSlug = 'trending';
       if(type === 'series') trendingSlug = 'trending-tv';
-      if(type === 'doramas') trendingSlug = 'releases-k';
+      if(type === 'doramas') trendingSlug = 'releases-k'; // Destaque para lançamentos em Doramas
 
       let originals = list.filter(i => i.slug === trendingSlug);
-      
       if(originals.length === 0 && list.length > 0) originals = [list[0]];
 
       if (originals.length > 0 && originals[0].items && originals[0].items.results.length > 0) {
           let validItems = originals[0].items.results.filter(i => i.backdrop_path);
+          
+          // Se filtrar demais, usa o que tem
           if(validItems.length === 0) validItems = originals[0].items.results;
 
-          let randomChosen = Math.floor(Math.random() * (validItems.length - 1));
-          let chosen = validItems[randomChosen];
+          // Pega Top 5
+          const top5 = validItems.slice(0, 5);
           
-          // Lógica INTELIGENTE para detectar o tipo correto e evitar erros 404
-          let mediaType = 'movie'; // Padrão
-          
-          if (chosen.media_type) {
-              mediaType = chosen.media_type;
-          } else if (type === 'doramas' || type === 'series') {
-              mediaType = 'tv';
-          } else {
-              // Heurística baseada em propriedades únicas
-              if (chosen.first_air_date) mediaType = 'tv';
-              else if (chosen.release_date) mediaType = 'movie';
-          }
+          const detailedTop5 = await Promise.all(top5.map(async (item) => {
+             // Lógica para detectar tipo
+              let mediaType = 'movie'; 
+              if (item.media_type) mediaType = item.media_type;
+              else if (type === 'doramas' || type === 'series') mediaType = 'tv';
+              else if (item.first_air_date) mediaType = 'tv';
 
-          let chosenInfo = await Tmdb.getMovieInfo(chosen.id, mediaType); 
-          setFeaturedData(chosenInfo);
+              const info = await Tmdb.getMovieInfo(item.id, mediaType);
+              return info || item;
+          }));
+
+          setFeaturedList(detailedTop5);
+          setActiveIndex(0);
       }
   };
 
@@ -155,6 +167,8 @@ const Home = ({ onLogout }) => {
   };
 
   const handleOpenModal = async (movie) => {
+      if(onModalChange) onModalChange(true); // Avisa App para esconder Chat
+
       let type = 'movie';
       if(movie.media_type === 'tv' || movie.name || filter === 'series' || filter === 'doramas' || (activeCategory && activeCategory.slug.includes('-k'))) type = 'tv';
       
@@ -165,6 +179,8 @@ const Home = ({ onLogout }) => {
   // Handler para buscar ator clicado no Modal (Quem é esse Oppa?)
   const handleActorSearch = (actor) => {
       setSelectedMovie(null); // Fecha o modal
+      if(onModalChange) onModalChange(false); // Mostra Chat
+
       setIsSearchOpen(true); // Abre a barra de busca
       
       // Simula a busca pelo nome do ator
@@ -316,50 +332,72 @@ const Home = ({ onLogout }) => {
       {!searchTerm && (
         <>
             {/* SE ESTIVER NO MODO NORMAL (HOME) */}
-            {!activeCategory && featuredData && (
+            {!activeCategory && featuredList.length > 0 && (() => {
+                const featuredData = featuredList[activeIndex];
+                return (
                 <>
-                    <header className="relative h-[70vh] md:h-[90vh] w-full group">
-                        <div className="absolute inset-0">
-                        <img 
-                            src={`https://image.tmdb.org/t/p/original${featuredData.backdrop_path}`} 
-                            alt={featuredData.original_name || featuredData.title} 
-                            className="w-full h-full object-cover object-center md:object-top"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-zinc-900" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+                    <header className="relative h-[70vh] md:h-[90vh] w-full group overflow-hidden">
+                        {/* Background com Transição Suave */}
+                        <div key={featuredData.id} className="absolute inset-0 animate-in fade-in duration-1000">
+                            <img 
+                                src={`https://image.tmdb.org/t/p/original${featuredData.backdrop_path}`} 
+                                alt={featuredData.original_name || featuredData.title} 
+                                className="w-full h-full object-cover object-center md:object-top"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-zinc-900" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
                         </div>
 
+                        {/* Conteúdo do Hero e Botões */}
                         <div className="absolute bottom-0 left-0 w-full px-4 md:px-12 pb-16 md:pb-24 space-y-4 md:space-y-6">
-                        <div className="max-w-xl md:max-w-2xl space-y-2">
-                            <span className="inline-block px-2 py-1 bg-red-600 text-white text-[10px] md:text-xs font-bold rounded-sm uppercase tracking-wider mb-2">
-                                {filter === 'doramas' ? 'K-Drama Top 1' : 'Destaque'}
-                            </span>
-                            <h1 className="text-4xl md:text-7xl font-extrabold text-white leading-tight drop-shadow-xl">
-                                {featuredData.title || featuredData.name}
-                            </h1>
-                            
-                            <div className="flex items-center gap-4 text-xs md:text-sm font-bold text-gray-300">
-                                <span className="text-green-400">{(featuredData.vote_average * 10).toFixed(0)}% Relevante</span>
-                                <span>{new Date(featuredData.first_air_date || featuredData.release_date).getFullYear()}</span>
-                                {featuredData.number_of_seasons && <span>{featuredData.number_of_seasons} Temp.</span>}
+                            <div className="max-w-xl md:max-w-2xl space-y-2 animate-in slide-in-from-left-10 duration-700">
+                                <span className="inline-block px-2 py-1 bg-red-600 text-white text-[10px] md:text-xs font-bold rounded-sm uppercase tracking-wider mb-2">
+                                    {filter === 'doramas' ? 'K-Drama Top 5' : 'Destaque Top 5'}
+                                </span>
+                                <h1 className="text-4xl md:text-7xl font-extrabold text-white leading-tight drop-shadow-xl">
+                                    {featuredData.title || featuredData.name}
+                                </h1>
+                                
+                                <div className="flex items-center gap-4 text-xs md:text-sm font-bold text-gray-300">
+                                    <span className="text-green-400">{(featuredData.vote_average * 10).toFixed(0)}% Relevante</span>
+                                    <span>{new Date(featuredData.first_air_date || featuredData.release_date).getFullYear()}</span>
+                                    {featuredData.number_of_seasons && <span>{featuredData.number_of_seasons} Temp.</span>}
+                                </div>
+
+                                <p className="text-gray-200 text-xs md:text-lg drop-shadow-md line-clamp-3 md:line-clamp-4 max-w-[90%] md:max-w-xl">
+                                    {featuredData.overview}
+                                </p>
                             </div>
 
-                            <p className="text-gray-200 text-xs md:text-lg drop-shadow-md line-clamp-3 md:line-clamp-4 max-w-[90%] md:max-w-xl">
-                                {featuredData.overview}
-                            </p>
+                            <div className="flex items-center gap-3 md:gap-4 pt-2 animate-in fade-in zoom-in duration-1000 delay-200">
+                                <button className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white text-black px-4 py-2 md:px-8 md:py-3 rounded md:rounded md:text-xl font-bold hover:bg-opacity-90 transition active:scale-95">
+                                    <Play className="fill-black w-4 h-4 md:w-7 md:h-7" /> Assistir
+                                </button>
+                                <button 
+                                    onClick={() => handleOpenModal(featuredData)}
+                                    className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-zinc-600/70 text-white px-4 py-2 md:px-8 md:py-3 rounded md:rounded md:text-xl font-bold backdrop-blur-sm hover:bg-zinc-600/60 transition active:scale-95"
+                                >
+                                    <Info className="w-4 h-4 md:w-7 md:h-7" /> Detalhes
+                                </button>
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-3 md:gap-4 pt-2">
-                            <button className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white text-black px-4 py-2 md:px-8 md:py-3 rounded md:rounded md:text-xl font-bold hover:bg-opacity-90 transition active:scale-95">
-                                <Play className="fill-black w-4 h-4 md:w-7 md:h-7" /> Assistir
+                         {/* Botões de Navegação (Carousel Controls) */}
+                         <div className="absolute right-4 bottom-1/3 md:bottom-20 flex flex-col gap-2 z-20">
+                            <button 
+                                onClick={() => setActiveIndex(prev => (prev === 0 ? featuredList.length - 1 : prev - 1))}
+                                className="bg-black/30 hover:bg-white/20 p-2 md:p-3 rounded-full text-white backdrop-blur-sm border border-white/30 transition hover:scale-110"
+                            >
+                                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
                             </button>
                             <button 
-                                onClick={() => handleOpenModal(featuredData)}
-                                className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-zinc-600/70 text-white px-4 py-2 md:px-8 md:py-3 rounded md:rounded md:text-xl font-bold backdrop-blur-sm hover:bg-zinc-600/60 transition active:scale-95"
+                                onClick={() => setActiveIndex(prev => (prev + 1) % featuredList.length)}
+                                className="bg-black/30 hover:bg-white/20 p-2 md:p-3 rounded-full text-white backdrop-blur-sm border border-white/30 transition hover:scale-110"
                             >
-                                <Info className="w-4 h-4 md:w-7 md:h-7" /> Detalhes
+                                <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 rotate-180" />
                             </button>
-                        </div>
+                             {/* Indicador Numérico Simplificado */}
+                             <div className="text-white text-xs font-bold text-center mt-2 bg-black/50 px-2 py-1 rounded-full">{activeIndex + 1}/{featuredList.length}</div>
                         </div>
                     </header>
 
@@ -388,7 +426,6 @@ const Home = ({ onLogout }) => {
                                     alt={movie.title || movie.name}
                                     className="w-full h-full object-cover transition duration-300 md:group-hover:scale-110 md:group-hover:brightness-50"
                                 />
-                                {/* Barra de Progresso (Só aparece se tiver a propriedade progress) */}
                                 {movie.progress && (
                                     <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-700 z-20">
                                         <div 
@@ -397,8 +434,6 @@ const Home = ({ onLogout }) => {
                                         ></div>
                                     </div>
                                 )}
-
-                                {/* Ícone de Play centralizado ao Hover */}
                                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                                      <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center bg-black/40 backdrop-blur-sm">
                                          <Play className="w-5 h-5 text-white fill-white ml-0.5" />
@@ -411,7 +446,8 @@ const Home = ({ onLogout }) => {
                         ))}
                     </div>
                 </>
-            )}
+                );
+            })()}
 
             {/* SE ESTIVER NO MODO CATEGORIA (GRID INFINITO) */}
             {activeCategory && (
@@ -460,7 +496,10 @@ const Home = ({ onLogout }) => {
       {selectedMovie && (
           <MovieModal 
             movie={selectedMovie} 
-            onClose={() => setSelectedMovie(null)}
+            onClose={() => {
+                setSelectedMovie(null);
+                if(onModalChange) onModalChange(false);
+            }}
             onSearchActor={handleActorSearch} 
           />
       )}

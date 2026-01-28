@@ -19,9 +19,15 @@ function App() {
       }
   };
 
+  const [isChatVisible, setIsChatVisible] = useState(true);
+
   const handleLogout = () => {
       localStorage.removeItem('lyaflix_logged');
       setIsLoggedIn(false);
+  };
+
+  const handleModalState = (isOpen) => {
+      setIsChatVisible(!isOpen);
   };
 
   if (!isLoggedIn) {
@@ -30,8 +36,8 @@ function App() {
 
   return (
     <>
-      <Home onLogout={handleLogout} />
-      <JiHoonChat />
+      <Home onLogout={handleLogout} onModalChange={handleModalState} />
+      <JiHoonChat visible={isChatVisible} />
     </>
   );
 }

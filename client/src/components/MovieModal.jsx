@@ -157,6 +157,13 @@ const MovieModal = ({ movie, onClose, onSearchActor }) => {
                             <span className="text-white">{movie.original_title || movie.original_name}</span>
                          </div>
                          
+                         <div>
+                            <span className="block text-gray-500 mb-1">ID para Pedidos (TMDB):</span>
+                            <span className="text-zinc-300 font-mono text-xs bg-black/40 px-2 py-1 rounded border border-white/10 select-all">
+                                {movie.id}
+                            </span>
+                         </div>
+                         
                          <OppaCarousel cast={movie.credits?.cast} onActorClick={onSearchActor} />
                     </div>
                 </div>

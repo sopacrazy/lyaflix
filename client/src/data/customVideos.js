@@ -12,7 +12,8 @@ export const CUSTOM_VIDEOS = {
     // Amor Entre Linhas (ID: 279136)
     279136: {
         1: {
-            1: "https://drive.google.com/file/d/16bghZNnRIJaEaAmgM3VSEXUHF1d4v5dX/preview"
+            1: "https://drive.google.com/file/d/16bghZNnRIJaEaAmgM3VSEXUHF1d4v5dX/preview",
+            9: "https://drive.google.com/file/d/17WpNzRdNo4AoT6o__BeD3NnXh3hn5IXz/preview"
         }
     },
 

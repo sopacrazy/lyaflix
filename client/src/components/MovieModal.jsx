@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Play, Plus, ThumbsUp, ChevronLeft } from 'lucide-react';
+import { X, Play, Plus, ThumbsUp, ChevronLeft, Heart } from 'lucide-react';
 import { DoramaTags, EmotionalMeter, OppaCarousel, StreamingAvailability } from './DoramaFeatures';
 import { Doramometro } from './Doramometro';
 import HistoryService from '../services/history'; 
+import FavoritesService from '../services/favorites'; 
 import { CUSTOM_VIDEOS, getVideoLink } from '../data/customVideos'; 
 import SeasonViewer from './SeasonViewer'; 
 import FullscreenPlayer from './FullscreenPlayer'; // Importa Player Tela Cheia
@@ -10,6 +11,7 @@ import FullscreenPlayer from './FullscreenPlayer'; // Importa Player Tela Cheia
 const MovieModal = ({ movie, onClose, onSearchActor }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [playingUrl, setPlayingUrl] = useState(null); 
+    const [isFavorite, setIsFavorite] = useState(false);
 
     // Detectar data e tipo
     const firstDate = new Date(movie.first_air_date || movie.release_date);
@@ -19,12 +21,23 @@ const MovieModal = ({ movie, onClose, onSearchActor }) => {
     // Verifica link inicial
     const movieDirectLink = getVideoLink(movie.id);
 
-    // Salvar no histórico
+    // Salvar no histórico e verificar favoritos
     useEffect(() => {
         if(isPlaying) {
             HistoryService.addToHistory(movie);
         }
+        setIsFavorite(FavoritesService.isFavorite(movie.id));
     }, [isPlaying, movie]);
+
+    const handleToggleFavorite = () => {
+        if (isFavorite) {
+            FavoritesService.removeFavorite(movie.id);
+            setIsFavorite(false);
+        } else {
+            FavoritesService.addFavorite(movie);
+            setIsFavorite(true);
+        }
+    };
 
     const handlePlayMovie = () => {
         if(movieDirectLink) {
@@ -105,8 +118,12 @@ const MovieModal = ({ movie, onClose, onSearchActor }) => {
                             >
                                 <Play className="fill-black w-4 h-4 md:w-5 md:h-5" /> Assistir
                             </button>
-                            <button className="p-1.5 md:p-2 border-2 border-gray-500 rounded-full hover:border-white transition">
-                                <Plus className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                            <button 
+                                onClick={handleToggleFavorite}
+                                className={`p-1.5 md:p-2 border-2 rounded-full transition ${isFavorite ? 'border-red-500 bg-red-500/20' : 'border-gray-500 hover:border-white'}`}
+                                title={isFavorite ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
+                            >
+                                <Heart className={`w-4 h-4 md:w-5 md:h-5 ${isFavorite ? 'text-red-500 fill-red-500' : 'text-white'}`} />
                             </button>
                             <button className="p-1.5 md:p-2 border-2 border-gray-500 rounded-full hover:border-white transition">
                                 <ThumbsUp className="w-4 h-4 md:w-5 md:h-5 text-white" />

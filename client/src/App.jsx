@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import JiHoonChat from './components/JiHoonChat';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,15 +18,9 @@ function App() {
       }
   };
 
-  const [isChatVisible, setIsChatVisible] = useState(true);
-
   const handleLogout = () => {
       localStorage.removeItem('lyaflix_logged');
       setIsLoggedIn(false);
-  };
-
-  const handleModalState = (isOpen) => {
-      setIsChatVisible(!isOpen);
   };
 
   if (!isLoggedIn) {
@@ -36,8 +29,7 @@ function App() {
 
   return (
     <>
-      <Home onLogout={handleLogout} onModalChange={handleModalState} />
-      <JiHoonChat visible={isChatVisible} />
+      <Home onLogout={handleLogout} />
     </>
   );
 }

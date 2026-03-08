@@ -4,6 +4,7 @@ import { Play, Info, Bell, Search, ChevronLeft, ArrowLeft, X, LogOut } from 'luc
 import Tmdb from '../services/tmdb';
 import MovieModal from '../components/MovieModal';
 import FavoritesService from '../services/favorites'; // Importação do Serviço de Favoritos
+import { CUSTOM_VIDEOS } from '../data/customVideos'; // Importando vídeos disponíveis
 import logoImg from '../assets/lya.jpg'; // Importando a logo
 
 const Home = ({ onLogout, onModalChange }) => {
@@ -59,6 +60,40 @@ const Home = ({ onLogout, onModalChange }) => {
       setFeaturedList([]);
       
       let list = await Tmdb.getHomeList(type);
+
+      // --- Adicionar Categoria "Disponível para Assistir" (Items com Vídeo) ---
+      if (type === 'all' || type === 'movies' || type === 'series' || type === 'doramas') {
+          const availableIds = Object.keys(CUSTOM_VIDEOS).filter(id => id !== '999999');
+          
+          if (availableIds.length > 0) {
+              const availableItems = await Promise.all(
+                  availableIds.map(async (id) => {
+                      // Tenta detectar se é série ou filme baseado no objeto (série tem objeto de temporadas)
+                      // No CUSTOM_VIDEOS, se for objeto é série, se for string é filme.
+                      let mediaType = typeof CUSTOM_VIDEOS[id] === 'object' ? 'tv' : 'movie';
+                      return await Tmdb.getMovieInfo(id, mediaType);
+                  })
+              );
+
+              const validAvailableItems = availableItems.filter(item => item && item.id);
+              
+              if (validAvailableItems.length > 0) {
+                  const availableCategory = {
+                      slug: 'available-to-watch',
+                      title: '🔥 Assistir Agora no Lyaflix',
+                      items: { results: validAvailableItems }
+                  };
+                  
+                  // Insere após 'Continuar Assistindo' se existir, senão no topo
+                  if (list.length > 0 && list[0].slug === 'continue-watching') {
+                      list.splice(1, 0, availableCategory);
+                  } else {
+                      list.unshift(availableCategory);
+                  }
+              }
+          }
+      }
+
       setMovieList(list);
 
       // Lógica do Destaque (Top 5)
@@ -182,8 +217,6 @@ const Home = ({ onLogout, onModalChange }) => {
   };
 
   const handleOpenModal = async (movie) => {
-      if(onModalChange) onModalChange(true); // Avisa App para esconder Chat
-
       let type = 'movie';
       if(movie.media_type === 'tv' || movie.name || filter === 'series' || filter === 'doramas' || (activeCategory && activeCategory.slug.includes('-k'))) type = 'tv';
       
@@ -194,7 +227,6 @@ const Home = ({ onLogout, onModalChange }) => {
   // Handler para buscar ator clicado no Modal (Quem é esse Oppa?)
   const handleActorSearch = (actor) => {
       setSelectedMovie(null); // Fecha o modal
-      if(onModalChange) onModalChange(false); // Mostra Chat
 
       setIsSearchOpen(true); // Abre a barra de busca
       
@@ -515,7 +547,6 @@ const Home = ({ onLogout, onModalChange }) => {
             movie={selectedMovie} 
             onClose={() => {
                 setSelectedMovie(null);
-                if(onModalChange) onModalChange(false);
             }}
             onSearchActor={handleActorSearch} 
           />

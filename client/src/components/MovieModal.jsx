@@ -133,7 +133,7 @@ const MovieModal = ({ movie, onClose, onSearchActor }) => {
                 </div>
 
                 {/* Detalhes (Texto) */}
-                <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6 md:gap-0">
+                <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-[3fr_1.5fr] gap-6 md:gap-0">
                     <div className="space-y-4 md:space-y-6 md:pr-8">
                         <EmotionalMeter tmdbId={movie.id} voteAverage={movie.vote_average} />
                         

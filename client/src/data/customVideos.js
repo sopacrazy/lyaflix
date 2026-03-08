@@ -20,21 +20,6 @@ export const CUSTOM_VIDEOS = {
         }
     },
 
-    // DARK (ID: 70523)
-    70523: {
-        1: { // Temporada 1
-            1: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview",
-            2: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview",
-            3: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview"
-        },
-        2: { // Temporada 2
-            1: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview"
-        },
-        3: { // Temporada 3
-            1: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview"
-        }
-    },
-
     // Sinta-se em Casa, Sr. Ling (ID: 117549)
     117549: {
         1: {

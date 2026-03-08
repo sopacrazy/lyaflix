@@ -29,5 +29,10 @@ export const CUSTOM_DORAMA_DATA = {
         tags: ['friends_to_lovers'],
         mood: 'tension'
     },
+    // Sinta-se em Casa, Sr. Ling
+    117549: {
+        tags: ['ceo_rich'],
+        mood: 'funny'
+    },
     // Adicione mais IDs conforme for descobrindo na sua API
 };

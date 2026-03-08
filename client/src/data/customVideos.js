@@ -33,6 +33,13 @@ export const CUSTOM_VIDEOS = {
         3: { // Temporada 3
             1: "https://drive.google.com/file/d/1L_8pfHLE6XLfWRO5GHGwVkeGhpALPrOf/preview"
         }
+    },
+
+    // Sinta-se em Casa, Sr. Ling (ID: 117549)
+    117549: {
+        1: {
+            1: "https://drive.google.com/file/d/12Qf61X6U2VokUfqOHM7Ae9OiITE2OjbL/preview"
+        }
     }
 };
 

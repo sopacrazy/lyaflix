@@ -38,7 +38,11 @@ export const CUSTOM_VIDEOS = {
     // Sinta-se em Casa, Sr. Ling (ID: 117549)
     117549: {
         1: {
-            1: "https://drive.google.com/file/d/12Qf61X6U2VokUfqOHM7Ae9OiITE2OjbL/preview"
+            1: "https://drive.google.com/file/d/12Qf61X6U2VokUfqOHM7Ae9OiITE2OjbL/preview",
+            2: "https://drive.google.com/file/d/1lBuyVKvLOqIpJVTUwFSzc1_i5LaCOPCf/preview",
+            3: "https://drive.google.com/file/d/1kW58pLOFpwmBtkxv7DBnyp3ka_8o8Ruw/preview",
+            4: "https://drive.google.com/file/d/1biNpZvHUoE4_GR4wLvQne9QsQ_5HlEuI/preview",
+            5: "https://drive.google.com/file/d/1GVqPHGkJBsXG7MAIZeuStWFOTrkKgxxM/preview"
         }
     }
 };

@@ -27,7 +27,8 @@ export const CUSTOM_VIDEOS = {
             2: "https://drive.google.com/file/d/1lBuyVKvLOqIpJVTUwFSzc1_i5LaCOPCf/preview",
             3: "https://drive.google.com/file/d/1kW58pLOFpwmBtkxv7DBnyp3ka_8o8Ruw/preview",
             4: "https://drive.google.com/file/d/1biNpZvHUoE4_GR4wLvQne9QsQ_5HlEuI/preview",
-            5: "https://drive.google.com/file/d/1GVqPHGkJBsXG7MAIZeuStWFOTrkKgxxM/preview"
+            5: "https://drive.google.com/file/d/1GVqPHGkJBsXG7MAIZeuStWFOTrkKgxxM/preview",
+            6: "https://drive.google.com/file/d/1cgZAvcq_vFSCgqrE0Hywk93z5n7ofLWd/preview"
         }
     }
 };

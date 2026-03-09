@@ -28,7 +28,16 @@ export const CUSTOM_VIDEOS = {
             3: "https://drive.google.com/file/d/1kW58pLOFpwmBtkxv7DBnyp3ka_8o8Ruw/preview",
             4: "https://drive.google.com/file/d/1biNpZvHUoE4_GR4wLvQne9QsQ_5HlEuI/preview",
             5: "https://drive.google.com/file/d/1GVqPHGkJBsXG7MAIZeuStWFOTrkKgxxM/preview",
-            6: "https://drive.google.com/file/d/1cgZAvcq_vFSCgqrE0Hywk93z5n7ofLWd/preview"
+            6: "https://drive.google.com/file/d/1cgZAvcq_vFSCgqrE0Hywk93z5n7ofLWd/preview",
+            7: "https://drive.google.com/file/d/1c5VYZo2oU_vtsUurf6H2ho53DXbTpU3u/preview",
+            8: "https://drive.google.com/file/d/1UwBkbnkqmw0YCJkiyVKAtPjm-HqSuOyd/preview",
+            9: "https://drive.google.com/file/d/1jlQVmjkk5QT9OmkVhDJ89cn2Znzj-c13/preview",
+            10: "https://drive.google.com/file/d/1nSwGi5pu14iIydRAT4NVaPganngPw-Ib/preview",
+            11: "https://drive.google.com/file/d/1Ubm9LzMSFjKL0qLszjMgffBgBw8mPg9n/preview",
+            12: "https://drive.google.com/file/d/1xHsziM5RXR6E-u_0x-Ot3FGl2fEG6vgs/preview",
+            13: "https://drive.google.com/file/d/16n1AlyRiq1HCETilAY9YPE6OI-L-QT09/preview",
+            14: "https://drive.google.com/file/d/1pLSZBZ4hhp7G_xre38sZWdaxuecVqnsD/preview",
+            15: "https://drive.google.com/file/d/1Jvfsn97Z7tlLGGQHzG4nzLKEAhv5v5H3/preview"
         }
     }
 };
